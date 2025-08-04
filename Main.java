@@ -1,6 +1,8 @@
+import java.lang.foreign.*;
 import java.lang.foreign.Arena; // For allocating memory if needed
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.SegmentAllocator;
+import java.nio.charset.StandardCharsets;
 
 public class Main {
 
@@ -24,11 +26,16 @@ public class Main {
 
             if (strAddress != MemorySegment.NULL) {
                 MemorySegment sizedStringPtr = strAddress.reinterpret(byteLen);
-                String rustString = sizedStringPtr.getString(0); // This will now work
+                String rustString = new String(
+                    sizedStringPtr.toArray(ValueLayout.JAVA_BYTE),
+                    StandardCharsets.UTF_8
+                );
                 System.out.println("String from Rust: " + rustString);
             } else {
                 System.out.println("Rust returned a null string pointer.");
             }
         }
+
+        boolean uiRun = (boolean) RustBindings.runUi.invokeExact();
     }
 }

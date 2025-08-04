@@ -1,0 +1,15 @@
+{:paths ["src" "resources"]
+ :deps {org.clojure/clojure {:mvn/version "1.12.1"}
+	org.suskalo/coffi {:mvn/version "1.0.615"}}
+ :aliases
+ {:run-m {:main-opts ["-m" "fricze.fire"]
+	 :jvm-opts ["--enable-native-access=ALL-UNNAMED"]}
+  :run-x {:ns-default fricze.fire
+          :exec-fn greet
+          :exec-args {:name "Clojure"}}
+  :build {:deps {io.github.clojure/tools.build
+                 {:mvn/version "0.10.9"}}
+          :ns-default build}
+  :test {:extra-paths ["test"]
+         :extra-deps {org.clojure/test.check {:mvn/version "1.1.1"}
+                      io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}}}}

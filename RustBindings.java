@@ -5,8 +5,9 @@ import java.lang.invoke.VarHandle;
 
 public class RustBindings {
 
-    static MethodHandle addNumbers; // Wrapper for the Rust function
-    static MethodHandle giveString; // Wrapper for the Rust function
+    static MethodHandle addNumbers;
+    static MethodHandle giveString;
+    static MethodHandle runUi;
     static VarHandle strHandle;
     static VarHandle byteLenHandle;
 
@@ -30,20 +31,31 @@ public class RustBindings {
             )
         );
 
-        StructLayout pointLayout = MemoryLayout.structLayout(
+        StructLayout stringLayout = MemoryLayout.structLayout(
             ValueLayout.ADDRESS.withName("str"), // Maps to Rust's i32 `x`
             ValueLayout.JAVA_INT.withName("byte_len"), // Maps to Rust's i32 `y`
             MemoryLayout.paddingLayout(4) // 4 bytes of padding
         );
 
-        strHandle = pointLayout.varHandle(PathElement.groupElement("str"));
-        byteLenHandle = pointLayout.varHandle(
+        strHandle = stringLayout.varHandle(PathElement.groupElement("str"));
+        byteLenHandle = stringLayout.varHandle(
             PathElement.groupElement("byte_len")
         );
 
         giveString = linker.downcallHandle(
             lib.find("give_string").orElseThrow(),
-            FunctionDescriptor.of(pointLayout)
+            FunctionDescriptor.of(stringLayout)
+        );
+
+        // StructLayout resultLayout = MemoryLayout.structLayout(
+        //     ValueLayout.ADDRESS.withName("str"), // Maps to Rust's i32 `x`
+        //     ValueLayout.JAVA_INT.withName("byte_len"), // Maps to Rust's i32 `y`
+        //     MemoryLayout.paddingLayout(4) // 4 bytes of padding
+        // );
+
+        runUi = linker.downcallHandle(
+            lib.find("run_ui").orElseThrow(),
+            FunctionDescriptor.of(ValueLayout.JAVA_BOOLEAN)
         );
     }
 }
