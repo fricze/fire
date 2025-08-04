@@ -1,9 +1,10 @@
 {:paths ["src" "resources"]
  :deps {org.clojure/clojure {:mvn/version "1.12.1"}
-	org.suskalo/coffi {:mvn/version "1.0.615"}}
+        org.suskalo/coffi {:mvn/version "1.0.615"}}
  :aliases
  {:run-m {:main-opts ["-m" "fricze.fire"]
-	 :jvm-opts ["--enable-native-access=ALL-UNNAMED"]}
+          :jvm-opts ["--enable-native-access=ALL-UNNAMED"
+                     "-XstartOnFirstThread"]}
   :run-x {:ns-default fricze.fire
           :exec-fn greet
           :exec-args {:name "Clojure"}}

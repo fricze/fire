@@ -44,8 +44,31 @@ pub extern "C" fn just_string() -> *mut c_char {
 #[repr(C)]
 pub struct EfResult {
     message: *mut c_char,
-    success: bool,
-    // byte_len: usize,
+    // success: bool,
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn run_ui_result() -> EfResult {
+    let options = eframe::NativeOptions {
+        viewport: egui::ViewportBuilder::default().with_inner_size([320.0, 240.0]),
+        ..Default::default()
+    };
+    let res = eframe::run_native(
+        "My egui App",
+        options,
+        Box::new(|cc| Ok(Box::<MyApp>::default())),
+    );
+
+    match res {
+        Ok(_) => EfResult {
+            message: CString::new("Success".to_string()).unwrap().into_raw(),
+            // success: true,
+        },
+        Err(msg) => EfResult {
+            message: CString::new(msg.to_string()).unwrap().into_raw(),
+            // success: false,
+        },
+    }
 }
 
 #[unsafe(no_mangle)]
@@ -60,18 +83,6 @@ pub extern "C" fn run_ui() -> bool {
         options,
         Box::new(|cc| Ok(Box::<MyApp>::default())),
     );
-
-    // match res {
-    //     Ok(_) => EfResult {
-    //         message: CString::new("Success".to_string()).unwrap().into_raw(),
-    //         success: true,
-    //     },
-    //     Err(msg) => EfResult {
-    //         message: CString::new(msg.to_string()).unwrap().into_raw(),
-    //         success: false,
-    //     },
-    // }
-    //
 
     match res {
         Ok(_) => true,

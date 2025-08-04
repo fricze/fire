@@ -1,7 +1,7 @@
 (ns fricze.fire
   (:require
-	[coffi.mem :as mem]
-	[coffi.ffi :as ffi :refer [defcfn]])
+   [coffi.mem :as mem]
+   [coffi.ffi :as ffi :refer [defcfn]])
   (:gen-class))
 
 (defn greet
@@ -17,12 +17,13 @@
 
 (defcfn just-string just_string [] ::mem/c-string)
 
+(defcfn run-ui run_ui_result [] [::mem/struct [[:message ::mem/c-string]]])
 
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
+  (run-ui)
   (println (just-string))
-  (greet 
-	{:name (strlen "dupsok")})
+  (greet
+   {:name (strlen "dupsok")})
   (greet {:name (first args)}))
-
